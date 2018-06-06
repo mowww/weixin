@@ -28,7 +28,32 @@ class HelperClass
 		$content .= $str;
 		\File::put($envPath, $content);
 	}
-   
+     /**
+     *   获取AccessToken
+     */
+    public static function getAccessToken(){
+        $accessToken = env('WEIXIN_ACCESSTOKEN');
+        $expries = env('WEIXIN_EXPIRES_IN');
+        $time = env('WEIXIN_ACCESSTOKEN_TIME');
+        //存在accessToken，没有过期
+        if( $accessToken && ($time+$expries > time()) ){
+            return ['code'=>0,'data'=>$accessToken];
+        }else{
+            $url = 'https://api.weixin.qq.com/cgi-bin/token?';
+            $param['grant_type'] = 'client_credential';
+            $param['appid'] = env('WEIXIN_APPID');
+            $param['secret'] = env('WEIXIN_APPSECRET');
+            $res = json_decode(self::curl( $url.http_build_query($param),'GET'),true);
+            if($res===false||isset($res['errcode'])){
+                return ['code'=>600,'data'=>'getAccessToken接口返回错误','msg'=>$res];
+            }
+            $data['WEIXIN_ACCESSTOKEN_TIME']  = time();
+            $data['WEIXIN_ACCESSTOKEN']  = $res['access_token'];
+            $data['WEIXIN_EXPIRES_IN']  =$res['expires_in'];
+            self::modifyEnv($data);
+            return ['code'=>0,'data'=>$res['access_token']];
+        }
+    }
      /**
      * curl
      * Allen 2016418

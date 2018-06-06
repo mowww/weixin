@@ -2,66 +2,79 @@
 
 namespace App\Http\Controllers;
 use App\Common\HelperClass;
+use App\Model\checkonline_log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
 class WeixinController extends Controller
 {
     public function index(){
-          // 获取到微信请求里包含的几项内容
-          $signature = Input::get('signature');
-          $timestamp = Input::get('timestamp');
-          $nonce     = Input::get('nonce');
-          // weixin 是在微信后台手工添加的 token 的值
-          $token = 'weixin';
-          // 加工出自己的 signature
-          $our_signature = array($token, $timestamp, $nonce);
-          sort($our_signature, SORT_STRING);
-          $our_signature = implode($our_signature);
-          $our_signature = sha1($our_signature);
-          
-          // 用自己的 signature 去跟请求里的 signature 对比
-          if ($our_signature != $signature) {
-              return '';
-          }
-          return Input::get('echostr');
-    }
-    /**
-     *   获取AccessToken
-     */
-    public function getAccessToken(){
-        $accessToken = env('WEIXIN_ACCESSTOKEN');
-        $expries = env('WEIXIN_EXPIRES_IN');
-        $time = env('WEIXIN_ACCESSTOKEN_TIME');
-        //存在accessToken，没有过期
-        if( $accessToken && ($time+$expries > time()) ){
-            return ['code'=>0,'data'=>$accessToken];
-        }else{
-            $url = 'https://api.weixin.qq.com/cgi-bin/token?';
-            $param['grant_type'] = 'client_credential';
-            $param['appid'] = env('WEIXIN_APPID');
-            $param['secret'] = env('WEIXIN_APPSECRET');
-            $res = json_decode(HelperClass::curl( $url.http_build_query($param),'GET'),true);
-            if($res===false||isset($res['errcode'])){
-                return ['code'=>600,'data'=>'getAccessToken接口返回错误','msg'=>$res];
+        if (!isset(Input::get('signature')) {
+            // 获取到微信请求里包含的几项内容,验证
+            $signature = Input::get('signature');
+            $timestamp = Input::get('timestamp');
+            $nonce     = Input::get('nonce');
+            // weixin 是在微信后台手工添加的 token 的值
+            $token = 'weixin';
+            // 加工出自己的 signature
+            $our_signature = array($token, $timestamp, $nonce);
+            sort($our_signature, SORT_STRING);
+            $our_signature = implode($our_signature);
+            $our_signature = sha1($our_signature);
+            
+            // 用自己的 signature 去跟请求里的 signature 对比
+            if ($our_signature != $signature) {
+                return '';
             }
-            $data['WEIXIN_ACCESSTOKEN_TIME']  = time();
-            $data['WEIXIN_ACCESSTOKEN']  = $res['access_token'];
-            $data['WEIXIN_EXPIRES_IN']  =$res['expires_in'];
-            HelperClass::modifyEnv($data);
-            return ['code'=>0,'data'=>$res['access_token']];
+            return Input::get('echostr');
+        }else{
+            // return "success";
+           echo $this->responseMsg();
+        }
+    }
+    //接收推送信息
+    public function responseMsg(Request $request)
+    {
+        $postStr = $postStr1 = json_encode($request->all());
+        $postStr2 =  json_encode($GLOBALS["HTTP_RAW_POST_DATA"]);
+        checkonline_log::create(['Content'=>$postStr1.'///'. $postStr2]);
+        if (!empty($postStr)){
+            libxml_disable_entity_loader(true);
+            $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+            $fromUsername = $postObj->FromUserName;
+            $toUsername = $postObj->ToUserName;
+            $keyword = trim($postObj->Content);
+            $time = time();
+            $textTpl = "<xml><ToUserName><![CDATA[%s]]></ToUserName>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[text]]></MsgType>
+                        <Content><![CDATA[%s]]></Content>
+                        <FuncFlag>0</FuncFlag>
+                        </xml>";             
+            if($postObj->MsgType=='event'){
+                if($postObj->Event == 'CLICK'){
+                    if($postObj->EventKey == 'V1001_TODAY_MUSIC'){
+                        $contentStr = "微信连,www.phpos.net";
+                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $contentStr);
+                         return $resultStr;
+                    }
+                }
+            }
+        }else {
+            return "";
         }
     }
     /**
      *   创建公众号菜单
      */
     public function createMenu(){
-        $res = $this->getAccessToken();
+        $res = HelperClass::getAccessToken();
         if($res['code']==600   ){
             return $res['code'];
         }
         $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=';
-       $param = [
+        $param = [
             'button'=>[
                 [
                     "type"=>"click",
@@ -88,4 +101,18 @@ class WeixinController extends Controller
         $res1 = HelperClass::curl( $url.$res['data'],'POST',$param);
         return $res1;
     }
+
+     /**
+     *   查询公众号菜单接口
+     */
+    public function getMenu(){
+        $res = HelperClass::getAccessToken();
+        if($res['code']==600   ){
+            return $res['code'];
+        }
+        $url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token={$res['data']}";
+        $res1 = HelperClass::curl( $url);
+        return $res1;
+    }
+  
 }
