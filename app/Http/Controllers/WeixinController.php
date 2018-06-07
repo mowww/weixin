@@ -25,17 +25,15 @@ class WeixinController extends Controller
              return '';
          }
     }
-    public function index(Request $request){
+    public function index(){
         if (Input::get('echostr') != null) {
             return Input::get('echostr');
         }else{
-           $res = $this->responseMsg( $postStr2);
-           $this->log($res);
-           echo $res ;
+            return $this->responseMsg();
         }
     }
     //接收推送信息
-    public function responseMsg(Request $request)
+    public function responseMsg()
     {
         $postStr =   file_get_contents('php://input');
         if (!empty($postStr)){
@@ -51,11 +49,11 @@ class WeixinController extends Controller
                         <MsgType><![CDATA[text]]></MsgType>
                         <Content><![CDATA[%s]]></Content>
                         <FuncFlag>0</FuncFlag>
-                        </xml>";             
+                        </xml>";      
             if($postObj->MsgType=='event'){
                 if($postObj->Event == 'CLICK'){
-                    if($postObj->EventKey == 'V1001_TODAY_MUSIC'){
-                        $contentStr = "微信连,www.phpos.net";
+                    if($postObj->EventKey == 'V1001_TODAY_MUSIC'){//今日推荐，点击响应
+                        $contentStr = "ropynn.top";
                         $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $contentStr);
                          return $resultStr;
                     }
@@ -78,7 +76,7 @@ class WeixinController extends Controller
             'button'=>[
                 [
                     "type"=>"click",
-                    "name"=>"今日歌曲",
+                    "name"=>"今日推荐",
                     "key"=>"V1001_TODAY_MUSIC"
                 ],
                 [
@@ -118,7 +116,10 @@ class WeixinController extends Controller
      *   记录测试日志
      */
     public function log($data){
-        checkonline_log::create(['Content'=>  json_encode($data) ]);
+        if(is_array($data) || is_object($data)){
+           $data =  json_encode($data) ;
+        }
+        checkonline_log::create(['Content'=>$data]);
     }
   
 }
