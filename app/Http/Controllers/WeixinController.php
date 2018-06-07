@@ -8,36 +8,36 @@ use Illuminate\Support\Facades\Input;
 
 class WeixinController extends Controller
 {
-    public function index(){
-        if (!isset(Input::get('signature')) {
-            // 获取到微信请求里包含的几项内容,验证
-            $signature = Input::get('signature');
-            $timestamp = Input::get('timestamp');
-            $nonce     = Input::get('nonce');
-            // weixin 是在微信后台手工添加的 token 的值
-            $token = 'weixin';
-            // 加工出自己的 signature
-            $our_signature = array($token, $timestamp, $nonce);
-            sort($our_signature, SORT_STRING);
-            $our_signature = implode($our_signature);
-            $our_signature = sha1($our_signature);
-            
-            // 用自己的 signature 去跟请求里的 signature 对比
-            if ($our_signature != $signature) {
-                return '';
-            }
+    public function __construct(){
+         // 获取到微信请求里包含的几项内容,验证
+         $signature = Input::get('signature');
+         $timestamp = Input::get('timestamp');
+         $nonce     = Input::get('nonce');
+         // weixin 是在微信后台手工添加的 token 的值
+         $token = 'weixin';
+         // 加工出自己的 signature
+         $our_signature = array($token, $timestamp, $nonce);
+         sort($our_signature, SORT_STRING);
+         $our_signature = implode($our_signature);
+         $our_signature = sha1($our_signature);
+         // 用自己的 signature 去跟请求里的 signature 对比
+         if ($our_signature != $signature) {
+             return '';
+         }
+    }
+    public function index(Request $request){
+        if (Input::get('echostr') != null) {
             return Input::get('echostr');
         }else{
-            // return "success";
-           echo $this->responseMsg();
+           $res = $this->responseMsg( $postStr2);
+           $this->log($res);
+           echo $res ;
         }
     }
     //接收推送信息
     public function responseMsg(Request $request)
     {
-        $postStr = $postStr1 = json_encode($request->all());
-        $postStr2 =  json_encode($GLOBALS["HTTP_RAW_POST_DATA"]);
-        checkonline_log::create(['Content'=>$postStr1.'///'. $postStr2]);
+        $postStr =   file_get_contents('php://input');
         if (!empty($postStr)){
             libxml_disable_entity_loader(true);
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
@@ -62,7 +62,7 @@ class WeixinController extends Controller
                 }
             }
         }else {
-            return "";
+            return "success";
         }
     }
     /**
@@ -113,6 +113,12 @@ class WeixinController extends Controller
         $url = "https://api.weixin.qq.com/cgi-bin/menu/get?access_token={$res['data']}";
         $res1 = HelperClass::curl( $url);
         return $res1;
+    }
+     /**
+     *   记录测试日志
+     */
+    public function log($data){
+        checkonline_log::create(['Content'=>  json_encode($data) ]);
     }
   
 }
