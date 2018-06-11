@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 use App\Common\HelperClass;
-use App\Model\checkonline_log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -32,33 +31,70 @@ class WeixinController extends Controller
             return $this->responseMsg();
         }
     }
-    //接收推送信息
+     /**
+     * 方法：指向对应函数
+     * @param Request $request
+     * @return mixed
+     */
+    public function functionType($type){
+        switch ($type) {
+            default:
+                return $this->$type();
+                break;
+        }
+    }
+    //处理消息，接收推送信息
     public function responseMsg()
     {
         $postStr =   file_get_contents('php://input');
         if (!empty($postStr)){
             libxml_disable_entity_loader(true);
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $fromUsername = $postObj->FromUserName;
-            $toUsername = $postObj->ToUserName;
+            $fromUserName = $postObj->FromUserName;
+            $toUserName = $postObj->ToUserName;
             $keyword = trim($postObj->Content);
             $time = time();
-            $textTpl = "<xml><ToUserName><![CDATA[%s]]></ToUserName>
+            
+            //点击菜单事件
+            if($postObj->MsgType=='event'){
+                if($postObj->Event == 'CLICK'){
+                    $textTpl = "<xml><ToUserName><![CDATA[%s]]></ToUserName>
                         <FromUserName><![CDATA[%s]]></FromUserName>
                         <CreateTime>%s</CreateTime>
                         <MsgType><![CDATA[text]]></MsgType>
                         <Content><![CDATA[%s]]></Content>
                         <FuncFlag>0</FuncFlag>
-                        </xml>";      
-            if($postObj->MsgType=='event'){
-                if($postObj->Event == 'CLICK'){
+                        </xml>";  
                     if($postObj->EventKey == 'V1001_TODAY_MUSIC'){//今日推荐，点击响应
-                        $contentStr = "ropynn.top";
-                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $contentStr);
+                        $content = "ropynn.top";
+                        $resultStr = sprintf($textTpl, $fromUserName, $toUserName, $time, $content);
                          return $resultStr;
                     }
                 }
+            }else{
+                //回复消息
+                switch($postObj->MsgType){
+                    case "text":{
+                        $textTpl = "<xml><ToUserName><![CDATA[%s]]></ToUserName>
+                                    <FromUserName><![CDATA[%s]]></FromUserName>
+                                    <CreateTime>%s</CreateTime>
+                                    <MsgType><![CDATA[%s]]></MsgType>
+                                    <Content><![CDATA[%s]]></Content>
+                                    </xml>";  
+                        $createTime = time();  
+                        $msgType = "text";  
+                        $content = "接收方:$toUserName";  
+                        $content .= "\n发送方:$fromUserName";  
+                        $content .= "\n创建时间:$postObj->CreateTime";  
+                        $content .= "\n类型:text";  
+                        $content .= "\n内容:$postObj->Content";  
+                        $content .= "\n消息ID:$postObj->MsgId";  
+                        $res = sprintf( $textTpl ,  $fromUserName,$toUserName, $createTime, $msgType, $content);  
+                    }
+                }
+                return $res;
             }
+
         }else {
             return "success";
         }
@@ -93,7 +129,12 @@ class WeixinController extends Controller
                             "key"=>"V1001_GOOD"
                         ]
                     ]
-                ]
+                ],
+                [
+                    "type"=>"view",
+                    "name"=>"授权看小电影",
+                    "url"=>"https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=https:://weixin.ropynn.top/auth&response_type=code&scope=snsapi_userinfo&state=STATE"
+                ],
             ]
         ];
         $res1 = HelperClass::curl( $url.$res['data'],'POST',$param);
@@ -112,14 +153,18 @@ class WeixinController extends Controller
         $res1 = HelperClass::curl( $url);
         return $res1;
     }
-     /**
-     *   记录测试日志
+      /**
+     *   获取微信服务器IP地址
      */
-    public function log($data){
-        if(is_array($data) || is_object($data)){
-           $data =  json_encode($data) ;
+    public function getCallbackIp(){
+        $res = HelperClass::getAccessToken();
+        if($res['code']==600   ){
+            return $res['code'];
         }
-        checkonline_log::create(['Content'=>$data]);
+        $url = "https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token={$res['data']}";
+        $res1 = HelperClass::curl( $url);
+        return $res1;
     }
+    
   
 }

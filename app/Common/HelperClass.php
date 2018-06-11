@@ -1,7 +1,17 @@
 <?php
 namespace App\Common;
+use App\Model\checkonline_log;
 class HelperClass
  { 
+      /**
+     *   记录测试日志
+     */
+    public static function log($data){
+        if(is_array($data) || is_object($data)){
+           $data =  json_encode($data) ;
+        }
+        checkonline_log::create(['Content'=>$data]);
+    }
     /**
      *   修改env配置文件
      */

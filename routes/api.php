@@ -16,8 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::match(['get','post'],'/index', 'WeixinController@index');
-Route::get('/getAccessToken', 'WeixinController@getAccessToken');
-Route::get('/createMenu', 'WeixinController@createMenu');
-Route::get('/getMenu', 'WeixinController@getMenu');
+Route::match(['get','post'],'/{type}','WeixinController@functionType');
+// Route::match(['get','post'],'/index', 'WeixinController@index');
+// Route::get('/getAccessToken', 'WeixinController@getAccessToken');
+// Route::get('/createMenu', 'WeixinController@createMenu');
+// Route::get('/getMenu', 'WeixinController@getMenu');
 Route::match(['get','post'],'/answer/{type}', 'AnswerController@index');
