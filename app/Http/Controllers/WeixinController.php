@@ -108,8 +108,6 @@ class WeixinController extends Controller
             return $res['code'];
         }
         $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=';
-        $appid = env('WEIXIN_APPID');
-        $redir_url = urlencode('https://weixin.ropynn.top/web/auth');
         $param = [
             'button'=>[
                 [
@@ -117,25 +115,25 @@ class WeixinController extends Controller
                     "name"=>"今日推荐",
                     "key"=>"V1001_TODAY_MUSIC"
                 ],
-                [
-                    "name"=>"菜单",
-                    "sub_button"=>[
-                        [
-                            "type"=>"view",
-                            "name"=>"百度搜索",
-                            "url"=>"http://www.baidu.com/"
-                        ],
-                        [
-                            "type"=>"click",
-                            "name"=>"赞一下我们",
-                            "key"=>"V1001_GOOD"
-                        ]
-                    ]
-                ],
+                // [
+                //     "name"=>"菜单",
+                //     "sub_button"=>[
+                //         [
+                //             "type"=>"view",
+                //             "name"=>"百度搜索",
+                //             "url"=>"http://www.baidu.com/"
+                //         ],
+                //         [
+                //             "type"=>"click",
+                //             "name"=>"赞一下我们",
+                //             "key"=>"V1001_GOOD"
+                //         ]
+                //     ]
+                // ],
                 [
                     "type"=>"view",
                     "name"=>"授权看电影",
-                    "url"=>"https://open.weixin.qq.com/connect/oauth2/authorize?appid={$appid}&redirect_uri={$redir_url}&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
+                    "url"=>"http://weixin.ropynn.top/web/auth"
                 ],
             ]
         ];
