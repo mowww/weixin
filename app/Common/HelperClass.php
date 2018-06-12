@@ -66,9 +66,6 @@ class HelperClass
     }
      /**
      * curl
-     * Allen 2016418
-     * @param $id 记录id
-     * @return 返回
      */
     public static function curl($url,$wap='POST',$param=[],$time=10)
     {

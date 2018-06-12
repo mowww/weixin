@@ -108,6 +108,8 @@ class WeixinController extends Controller
             return $res['code'];
         }
         $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=';
+        $appid = env('WEIXIN_APPID');
+        $redir_url = urlencode('https://weixin.ropynn.top/web/auth');
         $param = [
             'button'=>[
                 [
@@ -132,8 +134,8 @@ class WeixinController extends Controller
                 ],
                 [
                     "type"=>"view",
-                    "name"=>"授权看小电影",
-                    "url"=>"https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=https:://weixin.ropynn.top/auth&response_type=code&scope=snsapi_userinfo&state=STATE"
+                    "name"=>"授权看电影",
+                    "url"=>"https://open.weixin.qq.com/connect/oauth2/authorize?appid={$appid}&redirect_uri={$redir_url}&response_type=code&scope=snsapi_userinfo&state=1#wechat_redirect"
                 ],
             ]
         ];

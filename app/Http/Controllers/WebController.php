@@ -12,10 +12,11 @@ class WebController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function functionType($type){
+    public function functionType($type,Request $request){
+        $data = $request->all();
         switch ($type) {
             default:
-                return $this->$type();
+                return $this->$type($data);
                 break;
         }
     }
@@ -24,7 +25,7 @@ class WebController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function auth(Request $request){
-        dd($request->all());
+    public function auth($request){
+        dd($request);
     }
 }
