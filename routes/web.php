@@ -15,3 +15,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::match(['get','post'],'/web/{type}','WebController@functionType');
+Route::match(['get','post'],'/bus/{type}','BusController@functionType');
