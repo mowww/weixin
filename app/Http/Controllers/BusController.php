@@ -8,7 +8,14 @@ use Illuminate\Support\Facades\Input;
 class BusController extends Controller
 {
     public $host = 'http://wxbus.gzyyjt.net/wei-bus-app/';
-    public $getByName = 'route/getByName';
+    public $getByName = 'route/getByName';//查询公交
+    public $getRunBus = 'runBus/getByRouteAndDirection';//列出实时公交状态
+    public $getBusStation = 'routeStation/getByRouteAndDirection';//获取某路线各站列表
+    public function __construct(){
+        $this->getByName =  $this->host.$this->getByName ;
+        $this->getRunBus =  $this->host.$this->getRunBus ;
+        $this->getBusStation =  $this->host.$this->getBusStation ;
+    }
      /**
      * 方法：指向对应函数
      * @param Request $request
@@ -30,8 +37,8 @@ class BusController extends Controller
      */
     public static function getURL($type , $num, $rev = 0){
         return [
-            "http://wxbus.gzyyjt.net/wei-bus-app/routeStation/getByRouteAndDirection/{$num}/{$rev}",
-            "http://wxbus.gzyyjt.net/wei-bus-app/runBus/getByRouteAndDirection/{$num}/{$rev}"
+            "{$this->getBusStation}/{$num}/{$rev}",
+            "{$this->getRunBus}/{$num}/{$rev}"
         ][$type];
     }
 
@@ -59,7 +66,7 @@ class BusController extends Controller
 
     }
 
-
+    //公交查询
     public function getRouteIDByNameInDB($name){
         $sql = "select * from busname where name LIKE '%{$name}%' and active !=0 ORDER BY ver DESC";
         //var_dump($sql);
