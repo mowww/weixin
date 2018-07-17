@@ -65,6 +65,29 @@ class HelperClass
         }
     }
      /**
+     *   获取JsapiTicket
+     */
+    public static function getJsapiTicket(){
+        $jsapiTicket = env('WEIXIN_JSAPITICKET');
+        $expries = env('WEIXIN_EXPIRES_IN');
+        $time = env('WEIXIN_JSAPITICKET_TIME');
+        //存在jsapiTicket，没有过期
+        if( $jsapiTicket && ($time+$expries > time()) ){
+            return ['code'=>0,'data'=>$jsapiTicket];
+        }else{
+            $accessToken = self::getAccessToken();
+            $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={$accessToken}&type=jsapi";
+            $res = json_decode(self::curl( $url,'GET'),true);
+            if($res===false||isset($res['errcode'])){
+                return ['code'=>600,'data'=>'getJsapiTicket接口返回错误','msg'=>$res];
+            }
+            $data['WEIXIN_JSAPITICKET_TIME']  = time();
+            $data['WEIXIN_JSAPITICKET']  = $res['ticket'];
+            self::modifyEnv($data);
+            return ['code'=>0,'data'=>$res['ticket']];
+        }
+    }
+     /**
      * curl
      */
     public static function curl($url,$wap='POST',$param=[],$time=10)
