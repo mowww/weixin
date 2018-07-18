@@ -75,7 +75,7 @@ class HelperClass
         if( $jsapiTicket && ($time+$expries > time()) ){
             return ['code'=>0,'data'=>$jsapiTicket];
         }else{
-            $accessToken = self::getAccessToken();
+            $accessToken = self::getAccessToken()['data'];
             $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={$accessToken}&type=jsapi";
             $res = json_decode(self::curl( $url,'GET'),true);
             if($res===false||isset($res['errcode'])){

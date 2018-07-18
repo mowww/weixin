@@ -20,17 +20,35 @@ class WApiController extends Controller
         }
     }
       /**
-     *   js-SDK签名算法
+     *   js-SDK签名算法，获取签名
+     *  
      */
-    public function getCallbackIp(){
-        $res = HelperClass::getAccessToken();
-        if($res['code']==600   ){
-            return $res['code'];
-        }
-        $url = "https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token={$res['data']}";
-        $res1 = HelperClass::curl( $url);
-        return $res1;
+    public function getSignPackage(){
+        $request = \Request::all();
+        $ticket = HelperClass::getJsapiTicket()['data'];
+        $url = $request['path'];
+        // 生成随机字符串
+        $nonceStr = $this->createNoncestr();
+        // 生成时间戳
+        $timestamp = time();
+        // 这里参数的顺序要按照 key 值 ASCII 码升序排序 j -> n -> t -> u
+        $string = "jsapi_ticket={$ticket}&noncestr={$nonceStr}&tamp={$timestamp}&url={$url}";
+        $signature = sha1($string);
+        $signPackage = [
+            "appId" => Env('WEIXIN_APPID'),
+            "nonceStr" => $nonceStr,
+            "timestamp" => $timestamp,
+            "signature" => $signature,
+        ];
+        return  json_encode($signPackage);
     }
-    
-  
+    // 创建随机字符串
+    public function createNoncestr($length = 16) {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $str = "";
+        for($i = 0; $i < $length; $i ++) {
+            $str .= substr ( $chars, mt_rand ( 0, strlen ( $chars ) - 1 ), 1 );
+        }
+        return $str;
+    }
 }
