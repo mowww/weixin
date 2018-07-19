@@ -57,7 +57,7 @@ class WApiController extends Controller
     }
     // 拉取git
     public function gitPull() {
-        exec("cd /var/www/250we && git pull origin master ",$output);
+        exec("cd /var/www/250we && sudo git pull origin master ",$output);
         // exec("ls -l",$output);
         print_r($output);
     }
