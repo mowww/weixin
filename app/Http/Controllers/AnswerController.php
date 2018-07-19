@@ -10,7 +10,6 @@ use Crypt;
 class AnswerController extends Controller
 {
     public function __construct(){
-
       header('Access-Control-Allow-Origin:*');
     }
     public function index($type){

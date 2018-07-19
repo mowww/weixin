@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Input;
 
 class WApiController extends Controller
 {
+    public function __construct(){
+        header('Access-Control-Allow-Origin:*');
+      }
      /**
      * 方法：指向对应函数
      * @param Request $request
@@ -19,6 +22,7 @@ class WApiController extends Controller
                 break;
         }
     }
+    
       /**
      *   js-SDK签名算法，获取签名
      *  
@@ -50,5 +54,11 @@ class WApiController extends Controller
             $str .= substr ( $chars, mt_rand ( 0, strlen ( $chars ) - 1 ), 1 );
         }
         return $str;
+    }
+    // 拉取git
+    public function gitPull() {
+        exec("cd /var/www/250we && git pull origin master ",$output);
+        // exec("ls -l",$output);
+        print_r($output);
     }
 }
