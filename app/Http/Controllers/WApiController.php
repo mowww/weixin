@@ -11,7 +11,7 @@ class WApiController extends Controller
         header('Access-Control-Allow-Origin:*');
       }
      /**
-     * 方法：指向对应函数1
+     * 方法：指向对应函数
      * @param Request $request
      * @return mixed
      */
