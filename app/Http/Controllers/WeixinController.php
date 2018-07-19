@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Input;
 class WeixinController extends Controller
 {
     public function __construct(){
-         // 获取到微信请求里包含的几项内容,验证1
+         // 获取到微信请求里包含的几项内容,验证
          $signature = Input::get('signature');
          $timestamp = Input::get('timestamp');
          $nonce     = Input::get('nonce');
