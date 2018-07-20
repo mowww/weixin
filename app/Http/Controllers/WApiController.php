@@ -61,7 +61,7 @@ class WApiController extends Controller
         if( $request['path'] == '250we'){
             exec("cd /var/www/250we &&  git pull origin master ",$output);
         }elseif( $request['path'] == '250js'){
-            exec("cd /var/www/250we &&  git pull origin master ",$output);
+            exec("cd /var/www/250js &&  git pull origin master ",$output);
         }
         print_r($output);
     }
