@@ -18,8 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::match(['get','post'],'/{type}','WeixinController@functionType');
 Route::match(['get','post'],'/wapi/{type}','WApiController@functionType');
-// Route::match(['get','post'],'/index', 'WeixinController@index');
-// Route::get('/getAccessToken', 'WeixinController@getAccessToken');
-// Route::get('/createMenu', 'WeixinController@createMenu');
-// Route::get('/getMenu', 'WeixinController@getMenu');
+Route::match(['get','post'],'/spider/{type}','SpiderController@functionType');
 Route::match(['get','post'],'/answer/{type}', 'AnswerController@index');
