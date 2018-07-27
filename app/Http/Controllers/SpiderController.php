@@ -58,7 +58,6 @@ class SpiderController extends Controller
             $total = count($v);
              //请求
             $requests = function ($total) use ($client,$tmpUri) {
-                // $uri = 'https://www.qiushibaike.com/';//文章article/120692920
                 foreach ($tmpUri as $key => $uri) {
                     yield function() use ($client, $uri) {
                         return $client->getAsync($uri,['allow_redirects' => [ 'protocols'=> ['https'] ]]);//用https
