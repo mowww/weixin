@@ -85,7 +85,6 @@ class SpiderController extends Controller
                                 // $this->countedAndCheckEnded();
                             },
                             'rejected' => function ($reason, $index){
-                                // $a = $reason;
                                 //   checkonline_log::create(['content'=>1]);
                             },
                         ]);
