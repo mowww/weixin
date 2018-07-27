@@ -20,6 +20,7 @@ class SpiderController extends Controller
         // '8h'=>'https://www.qiushibaike.com/8hr/page/',//糗百文本笑话/热门 1-13
         // 'new'=>'https://www.qiushibaike.com/textnew/page/',//糗百文本笑话/新鲜 1-35
     ];
+    public $url = 'https://www.qiushibaike.com';
      /**
      * 方法：指向对应函数
      * @param Request $request
@@ -69,13 +70,19 @@ class SpiderController extends Controller
                         [
                             'concurrency' => 3,//请求数
                             'fulfilled'   => function ($response, $index) use($k){
-                                // $flage = 0;
-                                // if(!env('SPIDER_FLAGE')){//不允许请求
-                                //     return ;
-                                // }
                                 $html = $response->getBody()->getContents();
                                 $data = $this->list($html,$k);
-                                checkonline_log::create(['content'=>json_encode($data)]);
+                                $addData = [];
+                                foreach($data as $key => $value){
+                                   $newUrl  = $this->url.$value['url'];
+                                   $old = oldUrls::where('url',$newUrl)->count();
+                                   $new =newUrls::where('url',$newUrl)->count();
+                                   if(!$old && !$new){
+                                        $addData[] =  ['url'=>$newUrl];
+                                   }
+                                }
+                                newUrls::insert($addData);
+                                // checkonline_log::create(['content'=>json_encode($data)]);
                                 // $this->countedAndCheckEnded();
                             },
                             'rejected' => function ($reason, $index){
