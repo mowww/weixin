@@ -71,7 +71,7 @@ class SpiderController extends Controller
         }
         $total = 0;
             //请求
-        $requests = function ($total) use ($client,$uri ) {
+        $requests = function ($total) use ($client,$uri) {
             foreach ($uri  as $key => $rUri) {
                 yield function() use ($client, $rUri) {
                     //checkonline_log::create(['content'=>$uri]);
@@ -128,10 +128,10 @@ class SpiderController extends Controller
         if(!$aUri ){
             return 1;
         }
-        $uri = array_column($aUri,'url');
+       $aUri = array_column($aUri,'url');
         $total = 0;
             //请求
-        $requests = function ($uri) use ($client,$uri ) {
+        $requests = function () use ($client,$uri ) {
             foreach ($uri  as $key => $rUri) {
                 yield function() use ($client, $rUri) {
                     //checkonline_log::create(['content'=>$uri]);
@@ -140,7 +140,7 @@ class SpiderController extends Controller
             }
         };
         $pool = new Pool($client, 
-                    $requests($uri), 
+                    $requests(), 
                     [
                         'concurrency' => 5,//请求数
                         'fulfilled'   => function ($response, $index)use($uri) {
