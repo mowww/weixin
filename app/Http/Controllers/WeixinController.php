@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Common\HelperClass;
 use Illuminate\Http\Request;
+use App\Model\joke;
 use Illuminate\Support\Facades\Input;
 
 class WeixinController extends Controller
@@ -66,7 +67,7 @@ class WeixinController extends Controller
                         <FuncFlag>0</FuncFlag>
                         </xml>";  
                     if($postObj->EventKey == 'V1001_TODAY_MUSIC'){//今日推荐，点击响应
-                        $content = "ropynn.top";
+                        $content = $this->getRandJoke();
                         $resultStr = sprintf($textTpl, $fromUserName, $toUserName, $time, $content);
                          return $resultStr;
                     }
@@ -99,6 +100,24 @@ class WeixinController extends Controller
             return "success";
         }
     }
+     /**
+     *   获取一个笑话
+     */
+    public function getRandJoke(){
+        $data = joke::orderBy(\DB::raw('RAND()')) ->take(1)->get()->toArray();
+        $content = $data[0]['content'];
+        $content = str_replace("<br>","\n",$content);
+        $content = str_replace("糗事百科","天才与渣渣",$content);
+        if($data[0]['comment']){
+            $comment = json_decode($data[0]['comment'],true);
+            $content .= "\n/********评论*******/";
+            foreach($comment as $k => $v){
+                $content .= "\n{$v['user']}👤：{$v['content']}";
+            }
+        }
+        return $content;
+    }
+
     /**
      *   创建公众号菜单
      */
@@ -112,7 +131,7 @@ class WeixinController extends Controller
             'button'=>[
                 [
                     "type"=>"click",
-                    "name"=>"今日推荐",
+                    "name"=>"皮一下",
                     "key"=>"V1001_TODAY_MUSIC"
                 ],
                 // [
