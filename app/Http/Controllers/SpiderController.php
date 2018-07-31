@@ -124,8 +124,11 @@ class SpiderController extends Controller
      */
     public function getContentStart($request){
         $client = new Client(['verify' => public_path().'/cert.pem']);//https
-        //一次调用20个，10秒一次。
-        $aUri = newUrls::limit(1)->get()->toArray();
+        //一次调用60个，一分钟一次。
+        $aUri = newUrls::limit(60)->get()->toArray();
+        if(!$aUri ){
+            return 1;
+        }
         $uri = array_column($aUri,'url');
         $total = 0;
             //请求

@@ -7,6 +7,4 @@ use Illuminate\Database\Eloquent\Model;
 class oldUrls extends Model
 {
     protected $table = 'oldUrls';
-    protected $guarded = ['id']; 
-
 }
