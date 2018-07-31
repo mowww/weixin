@@ -234,11 +234,9 @@ class SpiderController extends Controller
                         $data = end($tmp);
                 }
                 break;
-            case 2:
-                $tmp =  explode('/',$data);
-                if($tmp){
-                        $data = $tmp[2];
-                }
+                case 2:
+                    $tmp =  explode('/',$data);
+                    $data = isset($tmp[2])?$tmp[2] :'';
                 break;
         }
       return $data;
