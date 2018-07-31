@@ -128,7 +128,7 @@ class SpiderController extends Controller
         if(!$aUri ){
             return 1;
         }
-       $aUri = array_column($aUri,'url');
+       $uri = array_column($aUri,'url');
         $total = 0;
             //请求
         $requests = function () use ($client,$uri ) {
