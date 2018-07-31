@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class joke extends Model
 {
     protected $table = 'joke';
-    protected $guarded = ['id']; 
+    // protected $guarded = ['id']; 
 
 }
