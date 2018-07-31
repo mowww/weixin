@@ -84,9 +84,8 @@ class SpiderController extends Controller
                     [
                         'concurrency' => 3,//请求数
                         'fulfilled'   => function ($response, $index){
-                            $body = $response->getBody();
-                            $html = $body->getContents();
-                            checkonline_log::create(['content'=>$html]);
+                            $html = $response->getBody()->getContents();
+                            // checkonline_log::create(['content'=>$html]);
                             $data = $this->list($html);
                             $addData = [];
                             foreach($data as $key => $value){
@@ -145,8 +144,7 @@ class SpiderController extends Controller
                     [
                         'concurrency' => 5,//请求数
                         'fulfilled'   => function ($response, $index)use($uri) {
-                            $body = $response->getBody();
-                            $html = $body->getContents();
+                            $html = $response->getBody()->getContents();
                             $data = $this->contentDetail($html);
                             // checkonline_log::create(['content'=> json_encode($data)]);
                             //  dd($data,$this->getId($data[0]['userUrl'],2));
