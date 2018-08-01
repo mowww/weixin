@@ -204,7 +204,9 @@ class SpiderController extends Controller
                             // $this->countedAndCheckEnded();
                         },
                         'rejected' => function ($reason, $index){
+                            if(!empty($reason)){
                                 checkonline_log::create(['content'=>json_encode($reason)]);
+                            }
                         },
                     ]);
              //开始发送请求
