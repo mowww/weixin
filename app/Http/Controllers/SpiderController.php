@@ -105,7 +105,7 @@ class SpiderController extends Controller
                         },
                         'rejected' => function ($reason, $index){
                             if(!empty($reason)){
-                                checkonline_log::create(['content'=>json_encode($reason)]);
+                                // checkonline_log::create(['content'=>json_encode($reason)]);
                             }
                         },
                     ]);
@@ -207,7 +207,7 @@ class SpiderController extends Controller
                         },
                         'rejected' => function ($reason, $index){
                             if(!empty($reason)){
-                                checkonline_log::create(['content'=>json_encode($reason)]);
+                                // checkonline_log::create(['content'=>json_encode($reason)]);
                             }
                         },
                     ]);
