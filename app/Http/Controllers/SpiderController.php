@@ -130,7 +130,8 @@ class SpiderController extends Controller
         if(!$aUri ){
             return 1;
         }
-       $uri = array_column($aUri,'url');
+        $uri = array_column($aUri,'url');
+        newUrls::whereIn('url',$uri)->delete();
         $total = 0;
             //请求
         $requests = function () use ($client,$uri ) {
@@ -153,7 +154,6 @@ class SpiderController extends Controller
                             //  \DB::beginTransaction();
                             //  try{     
                                 //url维护
-                                newUrls::where('url',$uri[$index])->delete();
                                 $old = oldUrls::where('url',$uri[$index])->count();
                                 if(!$old){
                                     oldUrls::insert(['url'=>$uri[$index]]);
