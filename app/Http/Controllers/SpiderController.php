@@ -220,6 +220,78 @@ class SpiderController extends Controller
         // }
         return '1111';
     }
+     /**
+     * 方法：用户入口
+     * @param Request $request
+     * @return mixed
+     */
+    public function getUserStart($request){
+        $client = new Client(['verify' => public_path().'/cert.pem']);
+        $uri =  [];
+        //一次调用10个，一分钟一次。
+        $aUri = Quser::orderBy('rand')->limit(10)->get()->toArray();
+        $uri = [];
+        foreach($aUri as $k => $v){
+            $page =6;
+            for($i=1;$i <= $page ;$i++ ){
+                $uri[] = 'https://www.qiushibaike.com/users/'.$v['id']."/page_{$i}/";
+            }
+            Quser::where('id',$v['id'])->update(['rand'=>$v['rand']+1]);
+        }
+        $total = 0;
+            //请求
+        $requests = function ($total) use ($client,$uri) {
+            foreach ($uri  as $key => $rUri) {
+                yield function() use ($client, $rUri) {
+                    //checkonline_log::create(['content'=>$uri]);
+                    return $client->getAsync($rUri,$this->header);
+                };
+            }
+        };
+        $pool = new Pool($client, 
+                    $requests($total), 
+                    [
+                        'concurrency' => 3,//请求数
+                        'fulfilled'   => function ($response, $index){
+                            $html = $response->getBody()->getContents();
+                            //  checkonline_log::create(['content'=> $html ]);
+                             $data = $this->userlist($html);
+                            // checkonline_log::create(['content'=>json_encode($data)]);
+                            $addData = [];
+                            foreach($data as $key => $value){
+                                if($value['url']){
+                                    $newUrl  = $this->url.$value['url'];
+                                        $old = oldUrls::where('url',$newUrl)->count();
+                                        $new = newUrls::where('url',$newUrl)->count();
+                                        if(!$old && !$new){
+                                            $tmpData[] =  $newUrl;
+                                        }
+                                }
+                            }
+                            $tmpData = array_unique($tmpData);
+                            foreach($tmpData as $k => $v){
+                                $addData[] = ['url'=> $v];
+                            }
+                            // dd($addData);
+                            newUrls::insert($addData);
+                            // checkonline_log::create(['content'=>json_encode($data)]);
+                            // $this->countedAndCheckEnded();
+                        },
+                        'rejected' => function ($reason, $index){
+                            if(!empty($reason)){
+                                // checkonline_log::create(['content'=>json_encode($reason)]);
+                            }
+                        },
+                    ]);
+             //开始发送请求
+        // Initiate the transfers and create a promise
+        $promise = $pool->promise();
+        // Force the pool of requests to complete.
+        $promise->wait();
+            // unset($promise);
+        // }
+        return 1;
+    }
     public function countedAndCheckEnded()
     {
         $data['SPIDER_DATETIME']  = '"'.date('Y-m-d H:i:s').'"';//请求时间
@@ -308,4 +380,16 @@ class SpiderController extends Controller
         //查看采集结果
         return $data;
     }
+      //用户入口采集规则
+      public function userlist($html)
+      {
+          //采集规则
+          $rules = ['url' => ['li.user-article-text a','href']];
+          //列表选择器
+           $rang = 'div.user-feed';
+          //采集
+          $data = QueryList::html($html)->rules($rules)->range($rang)->query()->getData();
+          //查看采集结果
+          return $data;
+      }
 }
