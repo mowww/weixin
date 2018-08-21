@@ -257,7 +257,7 @@ class SpiderController extends Controller
                             //  checkonline_log::create(['content'=> $html ]);
                              $data = $this->userlist($html);
                             // checkonline_log::create(['content'=>json_encode($data)]);
-                            $addData = [];
+                            $tmpData = $addData = [];
                             foreach($data as $key => $value){
                                 if($value['url']){
                                     $newUrl  = $this->url.$value['url'];
