@@ -116,13 +116,13 @@ class WeixinController extends Controller
         $content = $data['content'];
         $content = str_replace("<br>","\n",$content);
         $content = str_replace("糗事百科","天才与渣渣",$content);
-        if($data['comment']){
-            $comment = json_decode($data['comment'],true);
-            $content .= "\n/********评论*******/";
-            foreach($comment as $k => $v){
-                $content .= "\n{$v['user']}👤：{$v['content']}";
-            }
-        }
+        // if($data['comment']){
+        //     $comment = json_decode($data['comment'],true);
+        //     $content .= "\n/********评论*******/";
+        //     foreach($comment as $k => $v){
+        //         $content .= "\n{$v['user']}👤：{$v['content']}";
+        //     }
+        // }
         return $content;
     }
 
