@@ -188,8 +188,8 @@ class SpiderController extends Controller
                                         }
                                     }
                                     $addJoke['comment'] = json_encode($comment);
-                                    $id = joke::insertGetId($addJoke);
-                                    \DB::select(\DB::raw("INSERT INTO jid (jid)({$id})"));
+                                    joke::insert($addJoke);
+                                    \DB::select(\DB::raw("INSERT INTO jid (jid) VALUES ({$contentId})"));
                                     // $addUser[] = [
                                     //     'id'=>$this->getId($data[0]['userUrl'],2),
                                     //     'userName'=>$data[0]['name'],
