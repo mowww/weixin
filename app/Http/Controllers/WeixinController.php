@@ -104,13 +104,13 @@ class WeixinController extends Controller
      *   获取一个笑话
      */
     public function getRandJoke(){
-        $id = \DB::raw('SELECT
-                            jid
-                        FROM
-                            jid
-                        ORDER BY
-                            RAND()
-                        LIMIT 1');
+        $id = \DB::select(\DB::raw('SELECT
+                                jid
+                            FROM
+                                jid
+                            ORDER BY
+                                RAND()
+                            LIMIT 1'));
         $data = joke::find($id)->toArray();
         $content = $data[0]['content'];
         $content = str_replace("<br>","\n",$content);
