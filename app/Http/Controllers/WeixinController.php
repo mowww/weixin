@@ -111,6 +111,7 @@ class WeixinController extends Controller
                             ORDER BY
                                 RAND()
                             LIMIT 1'));
+                            dd(    $id );
         $data = joke::find($id->jid)->toArray();
         $content = $data[0]['content'];
         $content = str_replace("<br>","\n",$content);
