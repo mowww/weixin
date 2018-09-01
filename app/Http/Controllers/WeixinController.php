@@ -112,7 +112,7 @@ class WeixinController extends Controller
                                 RAND()
                             LIMIT 1'));
         $id = json_decode(json_encode($id),true)[0]['jid'];
-        $data = joke::find($id->jid)->toArray();
+        $data = joke::find($id)->toArray();
         $content = $data[0]['content'];
         $content = str_replace("<br>","\n",$content);
         $content = str_replace("糗事百科","天才与渣渣",$content);
