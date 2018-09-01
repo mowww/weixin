@@ -113,11 +113,11 @@ class WeixinController extends Controller
                             LIMIT 1'));
         $id = json_decode(json_encode($id),true)[0]['jid'];
         $data = joke::find($id)->toArray();
-        $content = $data[0]['content'];
+        $content = $data['content'];
         $content = str_replace("<br>","\n",$content);
         $content = str_replace("糗事百科","天才与渣渣",$content);
-        if($data[0]['comment']){
-            $comment = json_decode($data[0]['comment'],true);
+        if($data['comment']){
+            $comment = json_decode($data['comment'],true);
             $content .= "\n/********评论*******/";
             foreach($comment as $k => $v){
                 $content .= "\n{$v['user']}👤：{$v['content']}";
