@@ -188,15 +188,16 @@ class SpiderController extends Controller
                                         }
                                     }
                                     $addJoke['comment'] = json_encode($comment);
-                                    joke::insert($addJoke);
-                                    $addUser[] = [
-                                        'id'=>$this->getId($data[0]['userUrl'],2),
-                                        'userName'=>$data[0]['name'],
-                                        'image'=>$this->getUrl($data[0]['imgUrl'],1),
-                                    ];
-                                    foreach($addUser as $k=> $v){
-                                        Quser::insert($v);
-                                    }
+                                    $id = joke::insertGetId($addJoke);
+                                    \DB::select(\DB::raw("INSERT INTO jid (jid)({$id})"));
+                                    // $addUser[] = [
+                                    //     'id'=>$this->getId($data[0]['userUrl'],2),
+                                    //     'userName'=>$data[0]['name'],
+                                    //     'image'=>$this->getUrl($data[0]['imgUrl'],1),
+                                    // ];
+                                    // foreach($addUser as $k=> $v){
+                                    //     Quser::insert($v);
+                                    // }
                                 }
                             // }catch (\Exception $e){
                             //     \DB::rollback();//事务回滚
