@@ -26,6 +26,7 @@ class WeixinController extends Controller
          }
     }
     public function index(){
+        HelperClass::log(['attttt']);
         if (Input::get('echostr') != null) {
             return Input::get('echostr');
         }else{
