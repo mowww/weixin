@@ -59,4 +59,8 @@ class WebController extends Controller
         }
         return view('weixin',['data'=>$res2]);
     }
+
+    public function test(){
+        return view('test');
+    }
 }

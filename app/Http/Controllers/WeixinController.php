@@ -136,12 +136,18 @@ class WeixinController extends Controller
             return $res['code'];
         }
         $url = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=';
+        $redir_url = urlencode('http://weixin.ropynn.top/web/test');
         $param = [
             'button'=>[
                 [
                     "type"=>"click",
                     "name"=>"皮一下",
                     "key"=>"V1001_TODAY_MUSIC"
+                ],
+                [
+                    "type"=>"click",
+                    "name"=>"测试",
+                    "url"=>"https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid=".env('WEIXIN_APPID')."&scene=1000&template_id=4CAAAFmpagEzsyX17r1bN35WB2F_JwmqFk7rG5dg1SM&redirect_url=".$redir_url."&reserved=test#wechat_redirect",
                 ],
                 // [
                 //     "name"=>"菜单",
