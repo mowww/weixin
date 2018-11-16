@@ -145,7 +145,7 @@ class WeixinController extends Controller
                     "key"=>"V1001_TODAY_MUSIC"
                 ],
                 [
-                    "type"=>"click",
+                    "type"=>"view",
                     "name"=>"测试",
                     "url"=>"https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid=".env('WEIXIN_APPID')."&scene=1000&template_id=4CAAAFmpagEzsyX17r1bN35WB2F_JwmqFk7rG5dg1SM&redirect_url=".$redir_url."&reserved=test#wechat_redirect",
                 ],
